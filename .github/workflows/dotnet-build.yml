@@ -1,28 +1,33 @@
-name: Build e Execução do WebApp .NET
+name: CI - ASP.NET Core WebApp
 
 on:
-  push:  # Quando houver push
-  schedule:
-    - cron: '0 * * * *'  # A cada hora (UTC)
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  setup-e-executa:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar o repositório
-        uses: actions/checkout@v3  # 🔁 Action pré-existente
+    - name: Clonar repositório
+      uses: actions/checkout@v3
 
-      - name: Instalar o SDK .NET
-        uses: actions/setup-dotnet@v3  # 🔁 Action pré-existente
-        with:
-          dotnet-version: '8.0.x'
+    - name: Instalar SDK do .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x' # ou a versão usada no seu projeto
 
-      - name: Restaurar dependências
-        run: dotnet restore **/*.csproj
+    - name: Restaurar dependências
+      run: dotnet restore
 
-      - name: Compilar projeto
-        run: dotnet build **/*.csproj --no-restore
+    - name: Compilar solução
+      run: dotnet build --configuration Release --no-restore
 
-      - name: Executar aplicação
-        run: dotnet run --project **/*.csproj --urls "http://localhost:5050"
+    - name: Executar testes
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Publicar aplicação
+      run: dotnet publish --configuration Release --output ./publish
+
