@@ -1,4 +1,4 @@
-name: CI - ASP.NET Core WebApp
+name: Build and Deploy .NET WebApp
 
 on:
   push:
@@ -11,23 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Clonar repositório
+    - name: Checkout do código
       uses: actions/checkout@v3
 
-    - name: Instalar SDK do .NET
+    - name: Instalar o .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x' # ou a versão usada no seu projeto
+        dotnet-version: '7.0.x'
 
     - name: Restaurar dependências
-      run: dotnet restore
+      run: dotnet restore ./github4women/github4women.csproj
 
-    - name: Compilar solução
-      run: dotnet build --configuration Release --no-restore
+    - name: Compilar projeto
+      run: dotnet build ./github4women/github4women.csproj --configuration Release --no-restore
 
-    - name: Executar testes
-      run: dotnet test --no-build --verbosity normal
+    - name: Executar testes (se houver)
+      run: dotnet test ./github4women/github4women.csproj --no-build --verbosity normal
 
     - name: Publicar aplicação
-      run: dotnet publish --configuration Release --output ./publish
+      run: dotnet publish ./github4women/github4women.csproj --configuration Release --output ./publish
+
+    - name: Exibir arquivos publicados
+      run: ls -R ./publish
 
